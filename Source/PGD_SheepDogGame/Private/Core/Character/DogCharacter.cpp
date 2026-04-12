@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ADogCharacter::ADogCharacter()
@@ -22,6 +23,10 @@ ADogCharacter::ADogCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(CameraSpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
+	
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	
 }
 
 // Called when the game starts or when spawned
@@ -47,6 +52,7 @@ void ADogCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		//Bind Move Function to move input action
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADogCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADogCharacter::Look);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ADogCharacter::Jump);
 	}
 
 }
@@ -58,19 +64,29 @@ void ADogCharacter::Move(const FInputActionValue& value)
 	if (Controller && !Axis.IsZero())
 	{
 		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
-
-		// Forward / backward
 		const FVector ForwardDir =FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(ForwardDir, Axis.Y);
-
-		// Right / left
 		const FVector RightDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(ForwardDir, Axis.Y * MovementSpeed);
 		AddMovementInput(RightDir, Axis.X * MovementSpeed);
+		AddControllerYawInput(Axis.X);
+		
 	}
 }
 
 void ADogCharacter::Look(const FInputActionValue& value)
 {
-	//Add Here to Move Camera if Needed
+	FVector2D Axis = value.Get<FVector2D>();
+	
+	if (Controller && !Axis.IsZero())
+	{
+		//AddControllerYawInput(Axis.X);
+		AddControllerPitchInput(Axis.Y);
+	}
 }
+
+void ADogCharacter::Jump(const FInputActionValue& value)
+{
+	ACharacter::Jump();
+}
+
 

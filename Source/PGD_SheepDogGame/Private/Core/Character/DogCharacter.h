@@ -52,6 +52,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LookAction;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> JumpAction;
+	
 	
 	//Functions
 	UFUNCTION()
@@ -59,5 +62,7 @@ private:
 	
 	UFUNCTION()
 	void Look(const FInputActionValue& value);
+	
+	void Jump(const FInputActionValue& value);
 
 };
