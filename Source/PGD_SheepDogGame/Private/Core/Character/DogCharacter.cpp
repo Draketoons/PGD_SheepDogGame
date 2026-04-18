@@ -80,7 +80,7 @@ void ADogCharacter::Look(const FInputActionValue& value)
 	if (Controller && !Axis.IsZero())
 	{
 		//AddControllerYawInput(Axis.X);
-		AddControllerPitchInput(Axis.Y);
+		//AddControllerPitchInput(Axis.Y);
 	}
 }
 
