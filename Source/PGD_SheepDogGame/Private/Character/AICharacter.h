@@ -28,7 +28,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
-	ACharacter* Player;
+	ACharacter* PlayerObject;
 
 	UPROPERTY()
 	AAIController* AIController;

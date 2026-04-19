@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "AI/AC_Sheep.h"
+#include "Character/PlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Core/Character/DogCharacter.h"
 #include "DrawDebugHelpers.h"
 #include "Character/AICharacter.h"
 
@@ -18,6 +21,14 @@ void AAICharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	AIController = Cast<AAC_Sheep>(GetController());
+
+	TArray<AActor*> players;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADogCharacter::StaticClass(), players);
+
+	PlayerObject = Cast<ACharacter>(players[0]);
+
+	if (PlayerObject)
+		UE_LOG(LogTemp, Warning, TEXT("Player found!"));
 }
 
 // Called every frame
@@ -27,7 +38,11 @@ void AAICharacter::Tick(float DeltaTime)
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DetectionRadius, 10, FColor::Red, false, -1.0f, 1.0, 1.0);
 
-	float playerDistance = FVector::Dist(GetActorLocation(), Player->GetActorLocation());
+	if (!PlayerObject)
+		return;
+
+	float playerDistance = FVector::Dist(GetActorLocation(), PlayerObject->GetActorLocation());
+	UE_LOG(LogTemp, Warning, TEXT("Distance from player: %f"), playerDistance);
 
 	if (playerDistance < DetectionRadius)
 	{
@@ -45,10 +60,10 @@ void AAICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AAICharacter::AvoidPlayer()
 {
-	if (Player)
+	if (PlayerObject)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("AIController Location: %f, %f, %f"), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z)
-		FVector playerDirection = Player->GetActorLocation() - GetActorLocation();
+		FVector playerDirection = PlayerObject->GetActorLocation() - GetActorLocation();
 
 		FVector targetLocation = -playerDirection * AvoidOffset;
 
