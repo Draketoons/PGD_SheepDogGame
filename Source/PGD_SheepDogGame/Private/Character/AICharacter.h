@@ -39,6 +39,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float AvoidOffset;
 
+	UPROPERTY(EditAnywhere, Category = "AI Navigation")
+	bool InPen;
+
 	void AvoidPlayer();
 
 };

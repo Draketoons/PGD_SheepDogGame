@@ -41,8 +41,10 @@ void AAICharacter::Tick(float DeltaTime)
 	if (!PlayerObject)
 		return;
 
+	if (InPen)
+		return;
+
 	float playerDistance = FVector::Dist(GetActorLocation(), PlayerObject->GetActorLocation());
-	UE_LOG(LogTemp, Warning, TEXT("Distance from player: %f"), playerDistance);
 
 	if (playerDistance < DetectionRadius)
 	{
