@@ -33,13 +33,16 @@ ADogCharacter::ADogCharacter()
 void ADogCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	CurrentStamina = MaxStamina;
+	bIsDraining = false;
+	OnStaminaUpdate.Broadcast(CurrentStamina);
 }
 
 // Called every frame
 void ADogCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	DrainStamina();
 }
 
 // Called to bind functionality to input
@@ -53,9 +56,10 @@ void ADogCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADogCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADogCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ADogCharacter::Jump);
-		//EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ADogCharacter::SetIsSprintingTrue);
-		//EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Canceled, this, &ADogCharacter::SetIsSprintingFalse);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ADogCharacter::Sprint);
+		EnhancedInputComponent->BindAction(DeActivateSprintAction, ETriggerEvent::Completed, this, &ADogCharacter::DeActivateSprint);
 	}
+
 }
 
 void ADogCharacter::Move(const FInputActionValue& value)
@@ -67,8 +71,8 @@ void ADogCharacter::Move(const FInputActionValue& value)
 		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
 		const FVector ForwardDir =FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		const FVector RightDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		AddMovementInput(ForwardDir * MovementSpeed, Axis.Y);
-		AddMovementInput(RightDir * MovementSpeed, Axis.X);
+		AddMovementInput(ForwardDir, Axis.Y * MovementSpeed * MovementAccelerationMult);
+		AddMovementInput(RightDir, Axis.X * MovementSpeed * MovementAccelerationMult);
 		AddControllerYawInput(Axis.X);
 		
 	}
@@ -90,16 +94,47 @@ void ADogCharacter::Jump(const FInputActionValue& value)
 	ACharacter::Jump();
 }
 
-void ADogCharacter::SetIsSprintingTrue()
+void ADogCharacter::Sprint()
 {
-	isSprinting = true;
-	//UE_LOG(LogTemp, Warning, TEXT("Setting Sprinting to True"));
+	if (bIsDraining == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Sprint Toggled"));
+		bIsDraining = true;
+		GetCharacterMovement()->MaxWalkSpeed = 1000.f;
+	}
 }
 
-void ADogCharacter::SetIsSprintingFalse()
+void ADogCharacter::DrainStamina()
 {
-	isSprinting = false;
-	//UE_LOG(LogTemp, Warning, TEXT("Setting Sprinting to False"));
+	if (bIsDraining)
+	{
+		if (CurrentStamina <= 0)
+		{
+			CurrentStamina = 0;
+			bIsDraining = false;
+			OnStaminaUpdate.Broadcast(CurrentStamina);
+			GetCharacterMovement()->MaxWalkSpeed = 600.f;
+			return;
+		}
+		CurrentStamina -= 0.005;
+		OnStaminaUpdate.Broadcast(CurrentStamina);
+	}
+	else if (CurrentStamina < MaxStamina)
+	{
+		CurrentStamina += 0.005;
+		OnStaminaUpdate.Broadcast(CurrentStamina);
+	}
+}
+
+void ADogCharacter::DeActivateSprint()
+{
+	
+	//if (bIsDraining)
+	//{
+		//UE_LOG(LogTemp, Warning, TEXT("De-Sprint Toggled"));
+		//bIsDraining = false;
+		//MovementAccelerationMult = 1.0f;
+	//}
 }
 
 

@@ -9,6 +9,8 @@
 class UCameraComponent;
 class USpringArmComponent;
 class UInputAction;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaUpdate, float, stamina);
 UCLASS()
 class ADogCharacter : public ACharacter
 {
@@ -51,6 +53,21 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	bool isSprinting = false;
 	
+	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float MovementAccelerationMult = 1.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float MaxStamina = 1.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float CurrentStamina = 0.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	bool bIsDraining;
+	
+	UPROPERTY(EditAnywhere, BlueprintAssignable, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	FOnStaminaUpdate OnStaminaUpdate;
+	
 	//Move Input Action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveAction;
@@ -64,6 +81,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> SprintAction;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> SprintAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> DeActivateSprintAction;
+	
 	
 	//Functions
 	UFUNCTION()
@@ -73,6 +96,14 @@ private:
 	void Look(const FInputActionValue& value);
 	
 	void Jump(const FInputActionValue& value);
+	
+	UFUNCTION()
+	void Sprint();
+	
+	UFUNCTION()
+	void DrainStamina();
+	UFUNCTION()
+	void DeActivateSprint();
 
 	void SetIsSprintingTrue();
 	void SetIsSprintingFalse();
