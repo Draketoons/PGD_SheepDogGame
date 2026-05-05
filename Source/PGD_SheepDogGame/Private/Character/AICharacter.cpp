@@ -1,11 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Character/AICharacter.h"
 #include "AI/AC_Sheep.h"
 #include "Character/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/Character/DogCharacter.h"
 #include "DrawDebugHelpers.h"
-#include "Character/AICharacter.h"
+
 
 // Sets default values
 AAICharacter::AAICharacter()
