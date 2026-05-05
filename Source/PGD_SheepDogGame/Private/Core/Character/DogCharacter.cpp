@@ -53,8 +53,9 @@ void ADogCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADogCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADogCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ADogCharacter::Jump);
+		//EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ADogCharacter::SetIsSprintingTrue);
+		//EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Canceled, this, &ADogCharacter::SetIsSprintingFalse);
 	}
-
 }
 
 void ADogCharacter::Move(const FInputActionValue& value)
@@ -66,8 +67,8 @@ void ADogCharacter::Move(const FInputActionValue& value)
 		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
 		const FVector ForwardDir =FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		const FVector RightDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		AddMovementInput(ForwardDir, Axis.Y * MovementSpeed);
-		AddMovementInput(RightDir, Axis.X * MovementSpeed);
+		AddMovementInput(ForwardDir * MovementSpeed, Axis.Y);
+		AddMovementInput(RightDir * MovementSpeed, Axis.X);
 		AddControllerYawInput(Axis.X);
 		
 	}
@@ -87,6 +88,18 @@ void ADogCharacter::Look(const FInputActionValue& value)
 void ADogCharacter::Jump(const FInputActionValue& value)
 {
 	ACharacter::Jump();
+}
+
+void ADogCharacter::SetIsSprintingTrue()
+{
+	isSprinting = true;
+	//UE_LOG(LogTemp, Warning, TEXT("Setting Sprinting to True"));
+}
+
+void ADogCharacter::SetIsSprintingFalse()
+{
+	isSprinting = false;
+	//UE_LOG(LogTemp, Warning, TEXT("Setting Sprinting to False"));
 }
 
 
