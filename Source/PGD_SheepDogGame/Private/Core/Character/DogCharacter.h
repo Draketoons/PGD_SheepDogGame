@@ -82,9 +82,6 @@ private:
 	TObjectPtr<UInputAction> SprintAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> SprintAction;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> DeActivateSprintAction;
 	
 	
